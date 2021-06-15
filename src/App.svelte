@@ -4,8 +4,10 @@
 	import B from './b.svelte'
 	const routerConfig = {
 		'/a':A,
-		'/b':B
+		'/b':B,
+		'/a/:id':A
 	}
+	
 </script>
 <style>
 	body {
@@ -15,6 +17,7 @@
 <body >
 	<a href="/#a">a</a>
 	<a href="/#b">b</a>
+	<a href="/#a/x">c</a>
 	<View type='hash' {routerConfig}/>
 </body>
 
