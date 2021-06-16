@@ -24,14 +24,16 @@
             }
         }
         matchParam(path) {
-            Object.keys(this.routerParamMap).map((key) => {
-                console.log(key, path, path.startsWith(key));
-                if (path.startsWith(key)) {
-                    tag = this.routerParamMap[key];
-                    //todo 为param添加值
-                    //变成可中断。没找到报错
+            const keys = Object.keys(this.routerParamMap);
+            for (let i = 0; i < keys.length; i++) {
+                if (path.startsWith(keys[i])) {
+                    tag = this.routerParamMap[keys[i]].component;
+                    params[this.routerParamMap[keys[i]].param] = path
+                        .replace(keys[i], "")
+                        .slice(1);
+                    break;
                 }
-            });
+            }
         }
     }
     class HisoryRouter {}
@@ -61,9 +63,13 @@
             param = checkParam(key);
             if (param) {
                 param.forEach((p) => {
-                    params[p.substring(2)] = null;
+                    params[p] = null;
                 });
-                router.router(getNewKey(key, param), routerConfig[key], true);
+                router.router(
+                    getNewKey(key, param),
+                    { param, component: routerConfig[key] },
+                    true
+                );
             } else {
                 router.router(key, routerConfig[key]);
             }
