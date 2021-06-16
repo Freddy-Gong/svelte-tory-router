@@ -1,5 +1,6 @@
 <script>
     import { checkParam, getNewKey } from "./helper";
+    import { params } from "./store.js";
     class HashRouter {
         constructor() {
             this.routerMap = {};
@@ -28,7 +29,8 @@
             for (let i = 0; i < keys.length; i++) {
                 if (path.startsWith(keys[i])) {
                     tag = this.routerParamMap[keys[i]].component;
-                    params[this.routerParamMap[keys[i]].param] = path
+                    //wirtable的对象的属性可以直接改？
+                    $params[this.routerParamMap[keys[i]].param] = path
                         .replace(keys[i], "")
                         .slice(1);
                     break;
@@ -39,7 +41,6 @@
     class HisoryRouter {}
     let tag;
     let router;
-    let params = {};
     let param;
     export let type = "";
     export let routerConfig = {};
@@ -63,7 +64,8 @@
             param = checkParam(key);
             if (param) {
                 param.forEach((p) => {
-                    params[p] = null;
+                    //wirtable的对象的属性可以直接改？
+                    $params[p] = null;
                 });
                 router.router(
                     getNewKey(key, param),
@@ -79,5 +81,5 @@
     }
 </script>
 
-{console.log(params, router.routerParamMap)}
+{console.log($params, router.routerParamMap)}
 <svelte:component this={tag} />
