@@ -26,9 +26,11 @@
         }
         refersh() {
             const path = `/${location.hash.slice(1)}` || "";
-            if (this.routerMap[path]) {
+            if (this.routerMap[path] && typeof this.routerMap[path] !== 'string') {
                 tag = this.routerMap[path];
-            } else {
+            }else if(typeof this.routerMap[path] === 'string'){
+                tag = this.routerMap[this.routerMap[path]]
+            }else {
                 this.matchParam(path);
             }
         }
@@ -41,9 +43,15 @@
                     $params[this.routerParamMap[keys[i]].param] = path
                         .replace(keys[i], "")
                         .slice(1);
-                    break;
+                    return;
                 }
             }
+            if(this.routerMap['other']){
+                tag = this.routerMap['other']
+            }else{
+                throw new Error('无匹配路由')
+            }
+            
         }
         constructorChildrenRouter(pathArray, childrenConfig) {
             if (typeof childrenConfig !== "object") {
@@ -113,5 +121,4 @@
     }
 </script>
 
-{console.log(router.routerMap, router.routerParamMap)}
 <svelte:component this={tag} />

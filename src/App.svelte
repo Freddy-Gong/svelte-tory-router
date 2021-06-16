@@ -3,13 +3,16 @@
 	import { params } from "./store.js";
 	import A from "./a.svelte";
 	import B from "./b.svelte";
+	import C from "./404.svelte"
 	const routerConfig = {
 		"/a": {
-			'/b':{'/x':A},
+			'/b':'other',
 			'/c':B,
 			'/d':{'/y':A},
-			'/:x':A
-		}
+		},
+		'/e':B,
+		"/x":'/e',
+		"other":C
 	};
 </script>
 
@@ -17,7 +20,7 @@
 	<a href="/#a/b/x">a</a>
 	<a href="/#a/c">b</a>
 	<a href="/#a/d/y">c</a>
-	{$params.id}
+	{$params.x}
 	<View type="hash" {routerConfig} />
 </body>
 
