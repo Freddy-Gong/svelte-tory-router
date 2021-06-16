@@ -1,6 +1,10 @@
 <script>
     import { checkParam, getNewKey } from "./helper";
     import { params } from "./store.js";
+    let tag;
+    let router;
+    export let type = "";
+    export let routerConfig = {};
     class HashRouter {
         constructor() {
             this.routerMap = {};
@@ -11,9 +15,17 @@
         }
         router(path, component, param) {
             if (param) {
-                this.routerParamMap[path] = component;
+                if (component !== null && typeof component === "object") {
+                    this.constructorChildrenRouter([path], component);
+                } else {
+                    this.routerParamMap[path] = component;
+                }
             } else {
-                this.routerMap[path] = component;
+                if (component !== null && typeof component === "object") {
+                    this.constructorChildrenRouter([path], component);
+                } else {
+                    this.routerMap[path] = component;
+                }
             }
         }
         refersh() {
@@ -37,14 +49,22 @@
                 }
             }
         }
+        constructorChildrenRouter(pathArray, childrenConfig) {
+            if (typeof childrenConfig !== "object") {
+                let path = pathArray.join("");
+                console.log(path);
+                this.routerMap[path] = childrenConfig;
+                return;
+            }
+            Object.keys(childrenConfig).forEach((key) => {
+                pathArray.push(key);
+                this.constructorChildrenRouter(pathArray, childrenConfig[key]);
+                pathArray.pop();
+            });
+            return;
+        }
     }
     class HisoryRouter {}
-    let tag;
-    let router;
-    let param;
-    export let type = "";
-    export let routerConfig = {};
-
     $: if (type) {
         if (type !== "history" && type !== "hash") {
             throw new Error("路由模式只有hash和history两个选项");
@@ -60,6 +80,7 @@
     }
 
     $: if (Object.keys(routerConfig).length !== 0) {
+        let param;
         Object.keys(routerConfig).forEach((key) => {
             param = checkParam(key);
             if (param) {
@@ -81,5 +102,5 @@
     }
 </script>
 
-{console.log($params, router.routerParamMap)}
+{console.log(router.routerMap)}
 <svelte:component this={tag} />

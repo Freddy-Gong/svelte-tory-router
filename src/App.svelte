@@ -4,16 +4,18 @@
 	import A from "./a.svelte";
 	import B from "./b.svelte";
 	const routerConfig = {
-		"/a": A,
-		"/b": B,
-		"/a/:id": A,
+		"/a": {
+			'/b':{'/x':A},
+			'/c':B,
+			'/d':{'/y':A}
+		}
 	};
 </script>
 
 <body>
-	<a href="/#a">a</a>
-	<a href="/#b">b</a>
-	<a href="/#a/x">c</a>
+	<a href="/#a/b/x">a</a>
+	<a href="/#a/c">b</a>
+	<a href="/#a/d/y">c</a>
 	{$params.id}
 	<View type="hash" {routerConfig} />
 </body>
