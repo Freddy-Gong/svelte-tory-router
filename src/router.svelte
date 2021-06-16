@@ -1,5 +1,5 @@
 <script>
-    import { checkParam, getNewKey } from "./helper";
+    import { checkParam, getNewKey, resolvePath } from "./helper";
     import { params } from "./store.js";
     let tag;
     let router;
@@ -15,11 +15,7 @@
         }
         router(path, component, param) {
             if (param) {
-                if (component !== null && typeof component === "object") {
-                    this.constructorChildrenRouter([path], component);
-                } else {
-                    this.routerParamMap[path] = component;
-                }
+                this.routerParamMap[path] = component;
             } else {
                 if (component !== null && typeof component === "object") {
                     this.constructorChildrenRouter([path], component);
@@ -52,8 +48,23 @@
         constructorChildrenRouter(pathArray, childrenConfig) {
             if (typeof childrenConfig !== "object") {
                 let path = pathArray.join("");
-                console.log(path);
-                this.routerMap[path] = childrenConfig;
+                let param = checkParam(path);
+                if (param) {
+                    param.forEach((p) => {
+                        //wirtable的对象的属性可以直接改？
+                        $params[p] = null;
+                    });
+                    this.router(
+                        getNewKey(path, param),
+                        {
+                            param,
+                            component: resolvePath(routerConfig, pathArray),
+                        },
+                        true
+                    );
+                } else {
+                    this.routerMap[path] = childrenConfig;
+                }
                 return;
             }
             Object.keys(childrenConfig).forEach((key) => {
@@ -102,5 +113,5 @@
     }
 </script>
 
-{console.log(router.routerMap)}
+{console.log(router.routerMap, router.routerParamMap)}
 <svelte:component this={tag} />

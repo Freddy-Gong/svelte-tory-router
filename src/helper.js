@@ -9,3 +9,10 @@ export function getNewKey(key,param){
         return key.substring(0,index-2)
     }
 }
+export function resolvePath(config,pathArray){
+    let result = config
+    pathArray.forEach((path)=>{
+        result = result[path]
+    })
+    return result
+}
