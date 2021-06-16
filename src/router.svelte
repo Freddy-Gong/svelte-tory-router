@@ -26,11 +26,14 @@
         }
         refersh() {
             const path = `/${location.hash.slice(1)}` || "";
-            if (this.routerMap[path] && typeof this.routerMap[path] !== 'string') {
+            if (
+                this.routerMap[path] &&
+                typeof this.routerMap[path] !== "string"
+            ) {
                 tag = this.routerMap[path];
-            }else if(typeof this.routerMap[path] === 'string'){
-                tag = this.routerMap[this.routerMap[path]]
-            }else {
+            } else if (typeof this.routerMap[path] === "string") {
+                tag = this.routerMap[this.routerMap[path]];
+            } else {
                 this.matchParam(path);
             }
         }
@@ -46,12 +49,11 @@
                     return;
                 }
             }
-            if(this.routerMap['other']){
-                tag = this.routerMap['other']
-            }else{
-                throw new Error('无匹配路由')
+            if (this.routerMap["other"]) {
+                tag = this.routerMap["other"];
+            } else {
+                throw new Error("无匹配路由");
             }
-            
         }
         constructorChildrenRouter(pathArray, childrenConfig) {
             if (typeof childrenConfig !== "object") {
@@ -83,7 +85,35 @@
             return;
         }
     }
-    class HisoryRouter {}
+    class HisoryRouter {
+        constructor() {
+            this.routerMap = {};
+            this.routerParamMap = {};
+            this.init();
+            this._bindPopState();
+        }
+        router(path, component, param) {
+            if (param) {
+                this.routerParamMap[path] = component;
+            } else {
+                this.routerMap[path] = component;
+            }
+        }
+        init(path) {
+            window.history.replace({ path }, null, path);
+            tag = this.routerMap[path];
+        }
+        go(path) {
+            window.history.pushState({ path }, null, path);
+            tag = this.routerMap[path];
+        }
+        _bindPopState() {
+            window.addEventListener("popstate", (e) => {
+                const path = e.state && e.state.path;
+                tag = this.router[path];
+            });
+        }
+    }
     $: if (type) {
         if (type !== "history" && type !== "hash") {
             throw new Error("路由模式只有hash和history两个选项");
