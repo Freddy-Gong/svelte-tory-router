@@ -1,10 +1,23 @@
 <script>
     import { checkParam, getNewKey, resolvePath } from "./helper";
     import { params } from "./store.js";
+    import {onMount,onDestroy,beforeUpdate,afterUpdate} from 'svelte'
     let tag;
     let router;
     export let type = "";
     export let routerConfig = {};
+    onMount(()=>{
+        console.log('onMount')
+    })
+    onDestroy(()=>{
+        console.log('onDestory')
+    })
+    beforeUpdate(()=>{
+        console.log('beforeUpdate')
+    })
+    afterUpdate(()=>{
+        console.log('afterUpdate')
+    })
     class HashRouter {
         constructor() {
             this.routerMap = {};
@@ -150,5 +163,6 @@
         throw new Error("请传入routerConfig");
     }
 </script>
-
-<svelte:component this={tag} />
+<div >
+    <svelte:component this={tag} />
+</div>
