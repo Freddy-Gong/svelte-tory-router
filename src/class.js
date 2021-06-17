@@ -1,5 +1,5 @@
-import { params, tag } from "./store.js";
-import { checkParam ,getNewKey,resolvePath} from './clearFunction'
+import { params, tag, globalLifcycle } from "./store.js";
+import { checkParam, getNewKey, resolvePath } from './clearFunction'
 export class HashRouter {
     constructor(routerConfig) {
         this.routerMap = {};
@@ -22,6 +22,9 @@ export class HashRouter {
     }
     refersh() {
         const path = `/${location.hash.slice(1)}` || "";
+        if (globalLifcycle.beforEach && typeof globalLifcycle.beforEach === 'function') {
+            globalLifcycle.beforEach()
+        }
         if (
             this.routerMap[path] &&
             typeof this.routerMap[path] !== "string"

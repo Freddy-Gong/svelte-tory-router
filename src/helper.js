@@ -2,6 +2,16 @@ import { HashRouter, HisoryRouter } from './class'
 import { params } from "./store.js";
 import { checkParam } from './clearFunction'
 
+export function init(type, routerConfig) {
+    if (type && Object.keys(routerConfig).length !== 0) {
+        createRoute(type, routerConfig);
+    } else if (Object.keys(routerConfig).length !== 0 && !type) {
+        throw new Error("请传入type");
+    } else {
+        throw new Error("请传入routerConfig");
+    }
+}
+
 export function createRoute(type, routerConfig) {
     let router
     if (type !== "history" && type !== "hash") {
