@@ -2,16 +2,18 @@ import { HashRouter, HisoryRouter } from './class'
 import { params } from "./store.js";
 import { checkParam } from './clearFunction'
 
-export function createRoute(type) {
+export function createRoute(type, routerConfig) {
     let router
     if (type !== "history" && type !== "hash") {
         throw new Error("路由模式只有hash和history两个选项");
     }
     if (type === "hash") {
-        router = new HashRouter();
+        router = new HashRouter(routerConfig);
+        configRouter(routerConfig, router)
     }
     if (type === "history") {
-        router = new HisoryRouter();
+        router = new HisoryRouter(routerConfig);
+        configRouter(routerConfig, router)
     }
     return router
 }
@@ -36,5 +38,4 @@ export function configRouter(routerConfig, router) {
             router.router(key, routerConfig[key]);
         }
     });
-    return router
 }

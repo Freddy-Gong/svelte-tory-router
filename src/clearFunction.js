@@ -11,6 +11,7 @@ export function getNewKey(key, param) {
 }
 export function resolvePath(config, pathArray) {
     let result = config
+    console.log(result)
     pathArray.forEach((path) => {
         result = result[path]
     })

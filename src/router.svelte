@@ -1,17 +1,12 @@
 <script>
     import { tag } from "./store.js";
-    import { createRoute, configRouter } from "./helper";
-    let router;
+    import { createRoute } from "./helper";
     export let type = "";
     export let routerConfig = {};
-    $: if (type) {
-        router = createRoute(type);
-    } else {
+    $: if (type && Object.keys(routerConfig).length !== 0) {
+        createRoute(type, routerConfig);
+    } else if (Object.keys(routerConfig).length !== 0 && !type) {
         throw new Error("请传入type");
-    }
-
-    $: if (Object.keys(routerConfig).length !== 0) {
-        router = configRouter(routerConfig, router);
     } else {
         throw new Error("请传入routerConfig");
     }

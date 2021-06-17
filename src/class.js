@@ -1,10 +1,11 @@
 import { params, tag } from "./store.js";
 import { checkParam ,getNewKey,resolvePath} from './clearFunction'
 export class HashRouter {
-    constructor() {
+    constructor(routerConfig) {
         this.routerMap = {};
         this.routerParamMap = {};
         this.refersh = this.refersh.bind(this);
+        this.routerConfig = routerConfig
         window.addEventListener("load", this.refersh);
         window.addEventListener("hashchange", this.refersh);
     }
@@ -74,7 +75,7 @@ export class HashRouter {
                     getNewKey(path, param),
                     {
                         param,
-                        component: resolvePath(routerConfig, pathArray),
+                        component: resolvePath(this.routerConfig, pathArray),
                     },
                     true
                 );
