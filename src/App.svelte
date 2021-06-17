@@ -7,7 +7,7 @@
 	const routerConfig = {
 		"/a": {
 			"/b": {
-				"/:id": A,
+				"/:id": C,
 			},
 			"/c": B,
 			"/d": { "/y": A },

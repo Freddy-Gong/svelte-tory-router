@@ -38,13 +38,6 @@ export class HashRouter {
         for (let i = 0; i < keys.length; i++) {
             if (path.startsWith(keys[i])) {
                 tag.set({ ...tag, component: this.routerParamMap[keys[i]].component })
-                //wirtable的对象的属性可以直接改？
-                // params[this.routerParamMap[keys[i]].param] = path
-                //     .replace(keys[i], "")
-                //     .slice(1);
-                // $params[this.routerParamMap[keys[i]].param] = path
-                //     .replace(keys[i], "")
-                //     .slice(1);
                 params.set({
                     ...params,
                     [this.routerParamMap[keys[i]].param]: path
