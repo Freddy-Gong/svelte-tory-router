@@ -1,3 +1,3 @@
-    import { writable } from "svelte/store";
-    export const params = writable({});
-    export const tag = writable({})
+import { writable } from "svelte/store";
+export const params = writable({});
+export const tag = writable({ component: null })
