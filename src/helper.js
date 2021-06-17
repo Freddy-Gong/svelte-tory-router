@@ -1,5 +1,6 @@
 import { HashRouter, HisoryRouter } from './class'
 import { params } from "./store.js";
+import { checkParam } from './clearFunction'
 
 export function createRoute(type) {
     let router
@@ -24,7 +25,7 @@ export function configRouter(routerConfig, router) {
                 //wirtable的对象的属性可以直接改？
                 // $params[p] = null;
                 // params[p] = null
-                params.set({...params,[p]:null})
+                params.set({ ...params, [p]: null })
             });
             router.router(
                 getNewKey(key, param),
@@ -35,4 +36,5 @@ export function configRouter(routerConfig, router) {
             router.router(key, routerConfig[key]);
         }
     });
+    return router
 }

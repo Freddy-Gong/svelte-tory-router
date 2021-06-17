@@ -1,5 +1,5 @@
 import { params, tag } from "./store.js";
-import { checkParam } from './clearFunction'
+import { checkParam ,getNewKey,resolvePath} from './clearFunction'
 export class HashRouter {
     constructor() {
         this.routerMap = {};
@@ -36,7 +36,7 @@ export class HashRouter {
         const keys = Object.keys(this.routerParamMap);
         for (let i = 0; i < keys.length; i++) {
             if (path.startsWith(keys[i])) {
-                tag.set({...tag,component:this.routerParamMap[keys[i]].component})
+                tag.set({ ...tag, component: this.routerParamMap[keys[i]].component })
                 //wirtable的对象的属性可以直接改？
                 // params[this.routerParamMap[keys[i]].param] = path
                 //     .replace(keys[i], "")
@@ -55,7 +55,7 @@ export class HashRouter {
         }
         if (this.routerMap["other"]) {
             // tag = this.routerMap["other"];
-            tag.set({...tag,component:this.routerMap["other"]})
+            tag.set({ ...tag, component: this.routerMap["other"] })
         } else {
             throw new Error("无匹配路由");
         }
@@ -67,7 +67,8 @@ export class HashRouter {
             if (param) {
                 param.forEach((p) => {
                     //wirtable的对象的属性可以直接改？
-                    $params[p] = null;
+                    // $params[p] = null;
+                    params.set({ ...params, [p]: null })
                 });
                 this.router(
                     getNewKey(path, param),
@@ -108,18 +109,18 @@ export class HisoryRouter {
     init(path) {
         window.history.replace({ path }, null, path);
         // tag = this.routerMap[path];
-        tag.set({...tag,component:this.routerMap[path]})
+        tag.set({ ...tag, component: this.routerMap[path] })
     }
     go(path) {
         window.history.pushState({ path }, null, path);
         // tag = this.routerMap[path];
-        tag.set({...tag,component:this.routerMap[path]})
+        tag.set({ ...tag, component: this.routerMap[path] })
     }
     _bindPopState() {
         window.addEventListener("popstate", (e) => {
             const path = e.state && e.state.path;
             // tag = this.router[path];
-            tag.set({...tag,component:this.router[path]})
+            tag.set({ ...tag, component: this.router[path] })
         });
     }
 }

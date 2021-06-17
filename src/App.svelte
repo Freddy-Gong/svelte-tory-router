@@ -6,7 +6,7 @@
 	import C from "./404.svelte"
 	const routerConfig = {
 		"/a": {
-			'/b':'other',
+			'/b':"other",
 			'/c':B,
 			'/d':{'/y':A},
 		},
