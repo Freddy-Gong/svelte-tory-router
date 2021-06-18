@@ -1,7 +1,7 @@
 import { HashRouter, HisoryRouter } from './class'
 import { params } from "./store.js";
 import { checkParam } from './clearFunction'
-
+import {beforeUpdate, afterUpdate } from 'svelte'
 export function init(type, routerConfig) {
     if (type && Object.keys(routerConfig).length !== 0) {
         createRoute(type, routerConfig);
@@ -12,7 +12,7 @@ export function init(type, routerConfig) {
     }
 }
 
-export function createRoute(type, routerConfig) {
+function createRoute(type, routerConfig) {
     let router
     if (type !== "history" && type !== "hash") {
         throw new Error("路由模式只有hash和history两个选项");
@@ -28,7 +28,7 @@ export function createRoute(type, routerConfig) {
     return router
 }
 
-export function configRouter(routerConfig, router) {
+function configRouter(routerConfig, router) {
     let param;
     Object.keys(routerConfig).forEach((key) => {
         param = checkParam(key);
@@ -48,4 +48,24 @@ export function configRouter(routerConfig, router) {
             router.router(key, routerConfig[key]);
         }
     });
+}
+
+export function configGloableGuard(globalGuard) {
+    if (globalGuard.beforeEach) {
+        beforeEach(globalGuard.beforeEach);
+    }
+    if (globalGuard.afterEach) {
+        afterEach(globalGuard.afterEach);
+    }
+}
+
+function beforeEach(callback) {
+    return beforeUpdate(() => {
+        callback()
+    })
+}
+function afterEach(callback) {
+    return afterUpdate(() => {
+        callback()
+    })
 }

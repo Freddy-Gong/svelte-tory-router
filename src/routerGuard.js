@@ -1,4 +1,4 @@
-import { onMount, onDestroy, beforeUpdate, afterUpdate } from 'svelte'
+import { onMount, onDestroy, beforeUpdate } from 'svelte'
 import { globalGuard } from './store'
 export function registerGloableGuard(object) {
     globalGuard.set({ ...globalGuard, ...object })
@@ -18,14 +18,4 @@ export function beforeRouterEnter(callback) {
         callback()
     })
 }
-//全局
-export function beforeEach(callback) {
-    return beforeUpdate(() => {
-        callback()
-    })
-}
-export function afterEach(callback) {
-    return afterUpdate(() => {
-        callback()
-    })
-}
+
