@@ -1,105 +1,209 @@
-*Looking for a shareable component template? Go here --> [sveltejs/component-template](https://github.com/sveltejs/component-template)*
 
----
+# svelte router
 
-# svelte app
+svelte router 是一款专门用于svelter.js的路由管理器。它通过使用svelte.js内部提供的API完成大部分路由功能，让构建单页面应用变得易如反掌。包含的功能有：
 
-This is a project template for [Svelte](https://svelte.dev) apps. It lives at https://github.com/sveltejs/template.
+1. 嵌套路由
+2. 模块化的、基于组件的路由配置
+3. 路由参数、查询
+4. 细粒度的导航控制
+5. HTML5 历史模式或 hash 模式
 
-To create a new project based on this template using [degit](https://github.com/Rich-Harris/degit):
-
+## 安装
+直接通过npm进行下载即可
 ```bash
-npx degit sveltejs/template svelte-app
-cd svelte-app
+npm install svelte-router
 ```
+## 起步
 
-*Note that you will need to have [Node.js](https://nodejs.org) installed.*
+因为该库和svelte深度耦合，所以下面的示例都是在svelte运行环境下进行，请优先配置svelte运行环境
+```HTML
+<script>
+    import View from 'svelte-router'
+</script>
+<View type="" routerConfig="" />
+```
+用来展示页面的部分是View标签，她接受两个参数 type 和 routerConfig 。type是用来选择hash模式或者history模式的。routerConfig是一个对象，我们在这里进行路由配置。
+```HTML
+<script>
+    import View from 'svelte-router'
+    import A from './componentA'
+    import B from './componentB'
+    const routerConfig = { //key是路径
+        '/a':A,      //value是组件   
+        '/b':B
+    }
+</script>
+<a href="/#a" >A</a>
+<a href="/#b" >B</a>
+<View type="hash" {routerConfig} />
+<!-- type = hash | history -->
+```
+因为这里用的是hash路由，所以我们改变路由的时候要在前面加上#号。我们可以这样显示的通过a标签改变路由，也可以把这种改变封装到组件中，更好看。
+### 动态路由匹配
 
+我们经常需要把某种模式匹配到的所有路由，全都映射到同个组件。例如，我们有一个 User 组件，对于所有 ID 各不相同的用户，都要使用这个组件来渲染。那么，我们可以在 svelte-router 的路由路径中使用“动态路径参数”(dynamic segment) 来达到这个效果：
 
-## Get started
+```HTML
+<script>
+    import View from 'svelte-router'
+    import User from './component'
+    const routerConfig = { 
+        '/user/:id':User,      
+    }
+</script>
+<a href="/#user/foo" >A</a>
+<a href="/#user/bar" >B</a>
+<View type="hash" {routerConfig} />
+```
+现在呢，像 /user/foo 和 /user/bar 都将映射到相同的路由。
 
-Install the dependencies...
-
+一个“路径参数”使用冒号 : 标记。当匹配到一个路由时，参数值会被设置到全局变量params中，可以在每个组件内使用。于是，我们可以更新 User 的模板，输出当前用户的 ID：
+```HTML
+<script>
+//User.svelte
+    import { params } from "./store.js";
+</script>
+<h1>{$params.id}<h1>
+```
+提醒一下，当使用路由参数时，例如从 /user/foo 导航到 /user/bar，原来的组件实例会被复用。因为两个路由都渲染同个组件，比起销毁再创建，复用则显得更加高效。不过，这也意味着组件的生命周期钩子不会再被调用。
+### 嵌套路由
+实际生活中的应用界面，通常由多层嵌套的组件组合而成。同样地，URL 中各段动态路径也按某种结构对应嵌套的各层组件，例如：
 ```bash
-cd svelte-app
-npm install
+/user/foo/profile                     /user/foo/posts
++------------------+                  +-----------------+
+| User             |                  | User            |
+| +--------------+ |                  | +-------------+ |
+| | Profile      | |  +------------>  | | Posts       | |
+| |              | |                  | |             | |
+| +--------------+ |                  | +-------------+ |
++------------------+                  +-----------------+
 ```
-
-...then start [Rollup](https://rollupjs.org):
-
-```bash
-npm run dev
-```
-
-Navigate to [localhost:5000](http://localhost:5000). You should see your app running. Edit a component file in `src`, save it, and reload the page to see your changes.
-
-By default, the server will only respond to requests from localhost. To allow connections from other computers, edit the `sirv` commands in package.json to include the option `--host 0.0.0.0`.
-
-If you're using [Visual Studio Code](https://code.visualstudio.com/) we recommend installing the official extension [Svelte for VS Code](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode). If you are using other editors you may need to install a plugin in order to get syntax highlighting and intellisense.
-
-## Building and running in production mode
-
-To create an optimised version of the app:
-
-```bash
-npm run build
-```
-
-You can run the newly built app with `npm run start`. This uses [sirv](https://github.com/lukeed/sirv), which is included in your package.json's `dependencies` so that the app will work when you deploy to platforms like [Heroku](https://heroku.com).
-
-
-## Single-page app mode
-
-By default, sirv will only respond to requests that match files in `public`. This is to maximise compatibility with static fileservers, allowing you to deploy your app anywhere.
-
-If you're building a single-page app (SPA) with multiple routes, sirv needs to be able to respond to requests for *any* path. You can make it so by editing the `"start"` command in package.json:
-
+借助 svelte-router，使用嵌套路由配置，就可以很简单地表达这种关系。只需把routerConfig也改成这种关系即
 ```js
-"start": "sirv public --single"
+const routerConfig = {
+    '/user':{
+        '/foo':{
+            'profile':A,
+            'posts':B
+        },
+        '/bar':C
+    }
+}
+```
+上面的对象的嵌套关系最终会在hashRouter类内部实例化成
+```js
+{
+    '/user/foo/profile':A,
+    '/user/foo/ppsts':B,
+    '/user/bar':C
+}
 ```
 
-## Using TypeScript
 
-This template comes with a script to set up a TypeScript development environment, you can run it immediately after cloning the template with:
+### 重定向和404页面
 
-```bash
-node scripts/setupTypeScript.js
+#### 重定向
+重定向也是通过 routeConfig 配置来完成，下面例子是从 /a 重定向到 /b：
+```js
+const routerConfig ={
+    '/a':A,
+    '/b':'/a'
+}
+```
+注意导航守卫并没有应用在跳转路由上，而仅仅应用在其目标上。在下面这个例子中，为 /b 路由添加一个 beforeRouterEnter 守卫并不会有任何效果。
+#### 404
+404也是通过 routeConfig 配置来完成
+```js
+const routerConfig ={
+    '/a':A,
+    '/b':'/a',
+    'other': component404
+}
 ```
 
-Or remove the script via:
 
-```bash
-rm scripts/setupTypeScript.js
+### Histrory模式
+
+
+### 导航守卫
+正如其名，svelte-router 提供的导航守卫主要用来通过跳转或取消的方式守卫导航。有多种机会植入路由导航过程中：全局的或者组件级的。
+#### 全局守卫
+全局守卫有两个 全局前置守卫和全局后置守卫，他们是用过一个注册函数来进行注册使用的。
+```HTML
+<script>
+	import {registerGloableGuard} from './routerGuard'
+	
+	const guard = {
+		beforeEach:()=>{
+			console.log('beforeEach','gloable')
+		},
+		afterEach:()=>{
+			console.log('afterEach','gloable')
+		}
+	}
+	registerGloableGuard(guard)
+</script>
 ```
-
-## Deploying to the web
-
-### With [Vercel](https://vercel.com)
-
-Install `vercel` if you haven't already:
-
-```bash
-npm install -g vercel
+这个注册函数接受一个对象，对象中只有两个可选的key beforeEach | afterEach ，value即执行的callback。
+#### 组件守卫
+组件守卫有三种 分别是 beforeRouteUpdate,beforeRouterEnter,beforeRouterLeave 可分别通过引入的形式进行注册 传入要执行的callback
+```HTML
+<script>
+    import {beforeRouteUpdate,beforeRouterEnter,beforeRouterLeave} from './routerGuard'
+    beforeRouteUpdate(()=>{
+        console.log('beforeRouteUpdate','404')
+    })
+    beforeRouterEnter(()=>{
+        console.log('beforeRouterEnter','404')
+    })
+    beforeRouterLeave(()=>{
+        console.log('beforeRouterLeave','404')
+    })
+</script>
 ```
+#### 完整的导航解析流程
+1. 导航被触发。
+2. 调用全局的 beforeEach 守卫。
+3. 调用离开组件的 beforeRouterLeave
+4. 调用近入组件的 beforeRouterUpdate
+5. 调用近入组件的 beforeRouterEnter
+6. 调用全局的 afterEach 钩子。
+7. 触发 DOM 更新。
 
-Then, from within your project folder:
+### 过渡动效
+### 路由懒加载
+当打包构建应用时，JavaScript 包会变得非常大，影响页面加载。如果我们能把不同路由对应的组件分割成不同的代码块，然后当路由被访问的时候才加载对应组件，这样就更加高效了。
 
-```bash
-cd public
-vercel deploy --name my-project
+结合 svelte 的异步组件 (opens new window)和 Webpack 的代码分割功能 (opens new window)，轻松实现路由组件的懒加载。
+
+首先，我们可以使用动态 import (opens new window)语法来定义代码分块点 (split point)
+```HTML
+<script>
+    const Foo = () => import('./Foo.svelte')
+</script>
 ```
-
-### With [surge](https://surge.sh/)
-
-Install `surge` if you haven't already:
-
-```bash
-npm install -g surge
+在svelte-router内部是通过内置的await块实现异步组件，通过判断传入的组件是不是一个promise来判断是否使用异步组件
+```HTML
+{#if $tag.component instanceof Promise}
+    {#await $tag.component then component}
+        <svelte:component this={component} />
+    {/await}
+{:else}
+    <svelte:component this={$tag.component} />
+{/if}
 ```
-
-Then, from within your project folder:
-
-```bash
-npm run build
-surge public my-project.surge.sh
+所以在路由配置中什么都不需要改变，只需要像往常一样使用 Foo：
+```js
+const routerConfig = {
+    '/foo':Foo
+}
 ```
+#### 把组件按组分块
+有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用 命名 chunk (opens new window)，一个特殊的注释语法来提供 chunk name (需要 Webpack > 2.4)。
+```js
+const Foo = () => import(/* webpackChunkName: "group-foo" */ './Foo.vue')
+const Bar = () => import(/* webpackChunkName: "group-foo" */ './Bar.vue')
+const Baz = () => import(/* webpackChunkName: "group-foo" */ './Baz.vue')
+```
+Webpack 会将任何一个异步模块与相同的块名称组合到相同的异步块中。

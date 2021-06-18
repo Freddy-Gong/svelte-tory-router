@@ -7,4 +7,10 @@
     $: configGloableGuard($globalGuard)
 </script>
 
-<svelte:component this={$tag.component} />
+{#if $tag.component instanceof Promise}
+    {#await $tag.component then component}
+        <svelte:component this={component} />
+    {/await}
+{:else}
+    <svelte:component this={$tag.component} />
+{/if}
