@@ -4,6 +4,7 @@
 	import A from "./a.svelte";
 	import B from "./b.svelte";
 	import C from "./404.svelte";
+	import {beforeEach,afterEach} from './routerGuard'
 	const routerConfig = {
 		"/a": {
 			"/b": {
@@ -16,6 +17,12 @@
 		"/x": "/e",
 		other: C,
 	};
+	beforeEach(()=>{
+        console.log('beforeEach','gloable')
+    })
+    afterEach(()=>{
+        console.log('afterEach','gloable')
+    })
 </script>
 
 <body>
