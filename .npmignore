@@ -1,0 +1,5 @@
+*.md
+*.yml
+node_modules/
+src/
+gulpfile.js

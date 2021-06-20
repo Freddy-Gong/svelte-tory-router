@@ -1,7 +1,7 @@
 {
-  "name": "svelte-app",
+  "name": "svelte-tory-router",
   "version": "1.0.0",
-  "private": true,
+  "main": "public/build/bundle.js",
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",

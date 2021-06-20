@@ -1,7 +1,4 @@
-import App from './App.svelte';
-
-var app = new App({
-	target: document.body
-});
-
-export default app;
+import View from './router.svelte'
+import { params, tag, globalGuard } from './store'
+import { registerGloableGuard, beforeRouterLeave, beforeRouteUpdate, beforeRouterEnter } from './routerGuard'
+export { View,params, tag, globalGuard,registerGloableGuard, beforeRouterLeave, beforeRouteUpdate, beforeRouterEnter }

@@ -1,7 +1,7 @@
 
-# svelte router
+# svelte tory router
 
-svelte router 是一款专门用于svelter.js的路由管理器。它通过使用svelte.js内部提供的API完成大部分路由功能，让构建单页面应用变得易如反掌。包含的功能有：
+svelte-tory-router 是一款专门用于svelter.js的路由管理器。它通过使用svelte.js内部提供的API完成大部分路由功能，让构建单页面应用变得易如反掌。包含的功能有：
 
 1. 嵌套路由
 2. 模块化的、基于组件的路由配置
@@ -12,21 +12,21 @@ svelte router 是一款专门用于svelter.js的路由管理器。它通过使�
 ## 安装
 直接通过npm进行下载即可
 ```bash
-npm install svelte-router
+npm install svelte-tory-router
 ```
 ## 起步
 
 因为该库和svelte深度耦合，所以下面的示例都是在svelte运行环境下进行，请优先配置svelte运行环境
 ```HTML
 <script>
-    import View from 'svelte-router'
+    import {View} from 'svelte-tory-router'
 </script>
 <View type="" routerConfig="" />
 ```
 用来展示页面的部分是View标签，她接受两个参数 type 和 routerConfig 。type是用来选择hash模式或者history模式的。routerConfig是一个对象，我们在这里进行路由配置。
 ```HTML
 <script>
-    import View from 'svelte-router'
+    import {View} from 'svelte-tory-router'
     import A from './componentA'
     import B from './componentB'
     const routerConfig = { //key是路径
@@ -42,11 +42,11 @@ npm install svelte-router
 因为这里用的是hash路由，所以我们改变路由的时候要在前面加上#号。我们可以这样显示的通过a标签改变路由，也可以把这种改变封装到组件中，更好看。
 ### 动态路由匹配
 
-我们经常需要把某种模式匹配到的所有路由，全都映射到同个组件。例如，我们有一个 User 组件，对于所有 ID 各不相同的用户，都要使用这个组件来渲染。那么，我们可以在 svelte-router 的路由路径中使用“动态路径参数”(dynamic segment) 来达到这个效果：
+我们经常需要把某种模式匹配到的所有路由，全都映射到同个组件。例如，我们有一个 User 组件，对于所有 ID 各不相同的用户，都要使用这个组件来渲染。那么，我们可以在 svelte-tory-router 的路由路径中使用“动态路径参数”(dynamic segment) 来达到这个效果：
 
 ```HTML
 <script>
-    import View from 'svelte-router'
+    import {View} from 'svelte-tory-router'
     import User from './component'
     const routerConfig = { 
         '/user/:id':User,      
@@ -62,7 +62,7 @@ npm install svelte-router
 ```HTML
 <script>
 //User.svelte
-    import { params } from "./store.js";
+    import { params } from "svelte-tory-router";
 </script>
 <h1>{$params.id}<h1>
 ```
@@ -79,7 +79,7 @@ npm install svelte-router
 | +--------------+ |                  | +-------------+ |
 +------------------+                  +-----------------+
 ```
-借助 svelte-router，使用嵌套路由配置，就可以很简单地表达这种关系。只需把routerConfig也改成这种关系即
+借助 svelte-tory-router，使用嵌套路由配置，就可以很简单地表达这种关系。只需把routerConfig也改成这种关系即
 ```js
 const routerConfig = {
     '/user':{
@@ -180,12 +180,12 @@ http.createServer((req, res) => {
 })
 ```
 ### 导航守卫
-正如其名，svelte-router 提供的导航守卫主要用来通过跳转或取消的方式守卫导航。有多种机会植入路由导航过程中：全局的或者组件级的。
+正如其名，svelte-tory-router 提供的导航守卫主要用来通过跳转或取消的方式守卫导航。有多种机会植入路由导航过程中：全局的或者组件级的。
 #### 全局守卫
 全局守卫有两个 全局前置守卫和全局后置守卫，他们是用过一个注册函数来进行注册使用的。
 ```HTML
 <script>
-	import {registerGloableGuard} from './routerGuard'
+	import {registerGloableGuard} from 'svelte-tory-router'
 	
 	const guard = {
 		beforeEach:()=>{
@@ -235,7 +235,7 @@ http.createServer((req, res) => {
     const Foo = () => import('./Foo.svelte')
 </script>
 ```
-在svelte-router内部是通过内置的await块实现异步组件，通过判断传入的组件是不是一个promise来判断是否使用异步组件
+在svelte-tory-router内部是通过内置的await块实现异步组件，通过判断传入的组件是不是一个promise来判断是否使用异步组件
 ```HTML
 {#if $tag.component instanceof Promise}
     {#await $tag.component then component}
