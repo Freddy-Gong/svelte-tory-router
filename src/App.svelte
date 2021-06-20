@@ -4,7 +4,7 @@
 	import A from "./a.svelte";
 	import B from "./b.svelte";
 	import C from "./404.svelte";
-	import {registerGloableGuard} from './routerGuard'
+	import { onMount } from "svelte";
 	const routerConfig = {
 		"/a": {
 			"/b": {
@@ -17,24 +17,22 @@
 		"/x": "/e",
 		other: C,
 	};
-	const guard = {
-		beforeEach:()=>{
-			console.log('beforeEach','gloable')
-		},
-		afterEach:()=>{
-			console.log('afterEach','gloable')
-		}
-	}
-	registerGloableGuard(guard)
+	let container = null
+	onMount(()=>{
+		container = document.getElementsByClassName('container')[0]
+	})
+	 
 </script>
 
 <body>
-	<a href="/#a/b/x">a</a>
-	<a href="/#a/c">b</a>
-	<a href="/#a/d/y">c</a>
-	{$params.id}
+	<div class="container">
+		<a href="/a/b/x">a</a>
+		<a href="/a/c">b</a>
+		<a href="/a/d/y">c</a>
+	</div>
 	
-	<View type="hash" {routerConfig} />
+	{$params.id}
+	<View type="history" {routerConfig} historyContainer={container}/>
 </body>
 
 <style>

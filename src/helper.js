@@ -1,10 +1,10 @@
 import { HashRouter, HisoryRouter } from './class'
 import { params } from "./store.js";
 import { checkParam } from './clearFunction'
-import {beforeUpdate, afterUpdate } from 'svelte'
-export function init(type, routerConfig) {
+import { beforeUpdate, afterUpdate } from 'svelte'
+export function init(type, routerConfig, container) {
     if (type && Object.keys(routerConfig).length !== 0) {
-        createRoute(type, routerConfig);
+        createRoute(type, routerConfig, container);
     } else if (Object.keys(routerConfig).length !== 0 && !type) {
         throw new Error("请传入type");
     } else {
@@ -12,7 +12,7 @@ export function init(type, routerConfig) {
     }
 }
 
-function createRoute(type, routerConfig) {
+function createRoute(type, routerConfig, container) {
     let router
     if (type !== "history" && type !== "hash") {
         throw new Error("路由模式只有hash和history两个选项");
@@ -21,9 +21,18 @@ function createRoute(type, routerConfig) {
         router = new HashRouter(routerConfig);
         configRouter(routerConfig, router)
     }
-    if (type === "history") {
+    // if (type === "history" && !container) {
+    //     throw new Error('请传入路由的容器')
+    // }
+    if (type === "history" && container) {
         router = new HisoryRouter(routerConfig);
         configRouter(routerConfig, router)
+        container.addEventListener('click',e=>{
+            if(e.target.tagName === 'A'){
+                e.preventDefault()
+                router.go(e.target.getAttribute('href'))
+            }
+        })
     }
     return router
 }

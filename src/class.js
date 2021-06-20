@@ -90,25 +90,32 @@ export class HashRouter {
 }
 
 export class HisoryRouter {
-    constructor() {
+    constructor(routerConfig) {
         this.routerMap = {};
         this.routerParamMap = {};
-        this.init();
+        this.routerConfig = routerConfig
+        this.init(location.pathname);
         this._bindPopState();
     }
     router(path, component, param) {
         if (param) {
             this.routerParamMap[path] = component;
         } else {
-            this.routerMap[path] = component;
+            if (component !== null && typeof component === "object") {
+                this.constructorChildrenRouter([path], component);
+            } else {
+                
+                this.routerMap[path] = component;
+            }
         }
     }
     init(path) {
-        window.history.replace({ path }, null, path);
+        window.history.replaceState({ path }, null, path);
         // tag = this.routerMap[path];
         tag.set({ ...tag, component: this.routerMap[path] })
     }
     go(path) {
+        console.log(path,this.routerMap,this.routerMap[path])
         window.history.pushState({ path }, null, path);
         // tag = this.routerMap[path];
         tag.set({ ...tag, component: this.routerMap[path] })
@@ -117,7 +124,37 @@ export class HisoryRouter {
         window.addEventListener("popstate", (e) => {
             const path = e.state && e.state.path;
             // tag = this.router[path];
-            tag.set({ ...tag, component: this.router[path] })
+            tag.set({ ...tag, component: this.routerMap[path] })
         });
+    }
+    constructorChildrenRouter(pathArray, childrenConfig) {
+        if (typeof childrenConfig !== "object") {
+            let path = pathArray.join("");
+            let param = checkParam(path);
+            if (param) {
+                param.forEach((p) => {
+                    //wirtable的对象的属性可以直接改？
+                    // $params[p] = null;
+                    params.set({ ...params, [p]: null })
+                });
+                this.router(
+                    getNewKey(path, param),
+                    {
+                        param,
+                        component: resolvePath(this.routerConfig, pathArray),
+                    },
+                    true
+                );
+            } else {
+                this.routerMap[path] = childrenConfig;
+            }
+            return;
+        }
+        Object.keys(childrenConfig).forEach((key) => {
+            pathArray.push(key);
+            this.constructorChildrenRouter(pathArray, childrenConfig[key]);
+            pathArray.pop();
+        });
+        return;
     }
 }

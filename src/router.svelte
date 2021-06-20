@@ -1,10 +1,11 @@
 <script>
     import { tag, globalGuard } from "./store.js";
-    import { init ,configGloableGuard} from "./helper";
+    import { init, configGloableGuard } from "./helper";
     export let type = "";
     export let routerConfig = {};
-    $: init(type, routerConfig);
-    $: configGloableGuard($globalGuard)
+    export let historyContainer = null;
+    $: init(type, routerConfig, historyContainer);
+    $: configGloableGuard($globalGuard);
 </script>
 
 {#if $tag.component instanceof Promise}
