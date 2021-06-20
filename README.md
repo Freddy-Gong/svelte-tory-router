@@ -124,8 +124,61 @@ const routerConfig ={
 
 
 ### Histrory模式
+如果不想要很丑的 hash，我们可以用路由的 history 模式，这种模式充分利用 history.pushState API 来完成 URL 跳转而无须重新加载页面。不过这种模式下我们需要获得路由跳转标签的父级元素或者跳转标签的索引。
+```HTML
+<body>
+	<div class="container">
+		<a href="/a/b/v">a</a>
+		<a href="/a/c">b</a>
+		<a href="/a/d/y">c</a>
+	</div>
+	
+	{$params.id}
+	<View type="history" {routerConfig} historyContainer={container}/>
+</body>
+```
+当你使用 history 模式时，URL 就像正常的 url，例如 http://yoursite.com/user/id，也好看！
 
+不过这种模式要玩好，还需要后台配置支持。因为我们的应用是个单页客户端应用，如果后台没有正确的配置，当用户在浏览器直接访问 http://oursite.com/user/id 就会返回 404，这就不好看了。
 
+所以呢，你要在服务端增加一个覆盖所有情况的候选资源：如果 URL 匹配不到任何静态资源，则应该返回同一个 index.html 页面，这个页面就是你 app 依赖的页面
+#### 后端配置例子
+nginx
+```nginx
+//当index.html文件在服务器本地
+location / {
+  try_files $uri $uri/ /index.html;
+}
+//index.html 存于远程地址 比如cdn上
+http://www.cnd.com/file/index.html
+location / {
+    rewrite ^ /file/index.html break;
+    proxy_pass http://www.cnd.com;
+}
+```
+
+Node.js
+```js
+const http = require('http')
+const fs = require('fs')
+const httpPort = 80
+
+http.createServer((req, res) => {
+  fs.readFile('index.html', 'utf-8', (err, content) => {
+    if (err) {
+      console.log('We cannot open "index.html" file.')
+    }
+
+    res.writeHead(200, {
+      'Content-Type': 'text/html; charset=utf-8'
+    })
+
+    res.end(content)
+  })
+}).listen(httpPort, () => {
+  console.log('Server listening on: http://localhost:%s', httpPort)
+})
+```
 ### 导航守卫
 正如其名，svelte-router 提供的导航守卫主要用来通过跳转或取消的方式守卫导航。有多种机会植入路由导航过程中：全局的或者组件级的。
 #### 全局守卫
