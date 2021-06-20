@@ -118,7 +118,38 @@ export class HisoryRouter {
         console.log(path,this.routerMap,this.routerMap[path])
         window.history.pushState({ path }, null, path);
         // tag = this.routerMap[path];
-        tag.set({ ...tag, component: this.routerMap[path] })
+        if (
+            this.routerMap[path] &&
+            typeof this.routerMap[path] !== "string"
+        ) {
+            tag.set({ ...tag, component: this.routerMap[path] })
+        } else if (typeof this.routerMap[path] === "string") {
+            tag.set({ ...tag, component: this.routerMap[this.routerMap[path]] })
+        } else {
+            this.matchParam(path);
+        }
+        // tag.set({ ...tag, component: this.routerMap[path] })
+    }
+    matchParam(path) {
+        const keys = Object.keys(this.routerParamMap);
+        for (let i = 0; i < keys.length; i++) {
+            if (path.startsWith(keys[i])) {
+                tag.set({ ...tag, component: this.routerParamMap[keys[i]].component })
+                params.set({
+                    ...params,
+                    [this.routerParamMap[keys[i]].param]: path
+                        .replace(keys[i], "")
+                        .slice(1)
+                })
+                return;
+            }
+        }
+        if (this.routerMap["other"]) {
+            // tag = this.routerMap["other"];
+            tag.set({ ...tag, component: this.routerMap["other"] })
+        } else {
+            throw new Error("无匹配路由");
+        }
     }
     _bindPopState() {
         window.addEventListener("popstate", (e) => {
